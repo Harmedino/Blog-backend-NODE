@@ -38,8 +38,21 @@ const updateBlog = async (req, res) => {
   }
 };
 
+const getSingleBlog = async (req, res) => {
+  const { id } = req.params;
+  console.log(id);
+
+  try {
+    const result = await blog.findById(id);
+    res.json(result);
+  } catch (err) {
+    res.json(err);
+  }
+};
+
 module.exports = {
   getUser,
   sendPost,
   updateBlog,
+  getSingleBlog,
 };

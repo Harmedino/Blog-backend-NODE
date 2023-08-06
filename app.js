@@ -30,16 +30,7 @@ app.use("/", userRoute);
 
 app.post("/", userRoute);
 
-app.get("/getBlog/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const result = await blog.findById(id);
-    res.json(result);
-  } catch (err) {
-    res.json(err);
-  }
-});
+app.get("/:id", userRoute);
 
 app.delete("/deleteBlog/:id", async (req, res) => {
   const { id } = req.params;
