@@ -2,6 +2,7 @@ const { userSchemaValidate } = require("../middleware/yupvalidation");
 const blog = require("../model/blog");
 const User = require("../model/user");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const getUser = async (req, res) => {
   try {
@@ -71,7 +72,7 @@ const register = async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(409).json({ error: "Email already exists" });
+      return res.status(409).json({ mesage: "Email already exists" });
     }
 
     // Email is not already registered, continue with the registration process
@@ -89,7 +90,16 @@ const register = async (req, res) => {
         email,
         password: hashedPassword,
       });
-      res.json({ message: "Registeration Successful", response });
+      // Generate a JWT token
+      const token = jwt.sign(
+        { userId: response._id, email: response.email },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_LIFETIME }
+      );
+
+      // Send the token along with the registration response
+      res.json({ message: "Registration Successful", token });
+
       console.log("created");
     } catch (err) {
       res.json(err.message);
