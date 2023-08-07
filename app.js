@@ -3,8 +3,8 @@ require("dotenv").config();
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const blog = require("./model/blog");
 const userRoute = require("./router/blog");
+const auth = require("./router/authentication");
 
 const app = express();
 app.use(bodyParser.json());
@@ -28,10 +28,4 @@ connectDB();
 
 app.use("/", userRoute);
 
-app.post("/", userRoute);
-
-app.get("/", userRoute);
-
-app.delete("/", userRoute);
-
-app.patch("/", userRoute);
+app.post("/register", auth);

@@ -66,14 +66,25 @@ const register = async (req, res) => {
 
   try {
     await userSchemaValidate.validate({ fullName, userName, email, password });
-  } catch (error) {}
-
-  try {
-    const response = await user.create({ fullName, userName, email, password });
-    res.json({ message: "addedd", response });
-    console.log("created");
-  } catch (err) {
-    res.json(err.message);
+    console.log("validated");
+    try {
+      const response = await user.create({
+        fullName,
+        userName,
+        email,
+        password,
+      });
+      res.json({ message: "addedd", response });
+      console.log("created");
+    } catch (err) {
+      res.json(err.message);
+    }
+  } catch (error) {
+    if (error.name === "ValidationError") {
+      res.status(404).json({ error: error.message });
+    } else {
+      res.send("an error occured");
+    }
   }
 };
 
