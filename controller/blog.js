@@ -1,6 +1,7 @@
 const { userSchemaValidate } = require("../middleware/yupvalidation");
 const blog = require("../model/blog");
 const user = require("../model/user");
+const bcrypt = require("bcrypt");
 
 const getUser = async (req, res) => {
   try {
@@ -70,12 +71,15 @@ const register = async (req, res) => {
     await userSchemaValidate.validate(req.body);
     console.log("validated");
     try {
+      const salt = await bcrypt.genSalt();
+      const hashedPassword = await bcrypt.hash(password, salt);
+
       const response = await user.create({
         firstname,
         lastname,
         username,
         email,
-        password,
+        password: hashedPassword,
       });
       res.json({ message: "addedd", response });
       console.log("created");
