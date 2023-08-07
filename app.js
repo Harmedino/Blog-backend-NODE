@@ -30,17 +30,8 @@ app.use("/", userRoute);
 
 app.post("/", userRoute);
 
-app.get("/:id", userRoute);
+app.get("/", userRoute);
 
-app.delete("/deleteBlog/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const result = await blog.findByIdAndDelete(id);
-    res.json(result);
-  } catch (err) {
-    res.json(err);
-  }
-});
+app.delete("/", userRoute);
 
 app.patch("/", userRoute);

@@ -40,10 +40,20 @@ const updateBlog = async (req, res) => {
 
 const getSingleBlog = async (req, res) => {
   const { id } = req.params;
-  console.log(id);
 
   try {
     const result = await blog.findById(id);
+    res.json(result);
+  } catch (err) {
+    res.json(err);
+  }
+};
+
+const deleteBlog = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const result = await blog.findByIdAndDelete(id);
     res.json(result);
   } catch (err) {
     res.json(err);
@@ -55,4 +65,5 @@ module.exports = {
   sendPost,
   updateBlog,
   getSingleBlog,
+  deleteBlog,
 };
