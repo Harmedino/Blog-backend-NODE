@@ -28,4 +28,4 @@ connectDB();
 
 app.use("/", userRoute);
 
-app.post("/register", auth);
+app.use("/", auth);
