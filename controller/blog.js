@@ -1,3 +1,4 @@
+const { userSchemaValidate } = require("../middleware/yupvalidation");
 const blog = require("../model/blog");
 
 const getUser = async (req, res) => {
@@ -60,10 +61,27 @@ const deleteBlog = async (req, res) => {
   }
 };
 
+const register = async (req, res) => {
+  const { fullName, userName, email, password } = req.body;
+
+  try {
+    await userSchemaValidate.validate({ fullName, userName, email, password });
+  } catch (error) {}
+
+  try {
+    const response = await user.create({ fullName, userName, email, password });
+    res.json({ message: "addedd", response });
+    console.log("created");
+  } catch (err) {
+    res.json(err.message);
+  }
+};
+
 module.exports = {
   getUser,
   sendPost,
   updateBlog,
   getSingleBlog,
   deleteBlog,
+  register,
 };
