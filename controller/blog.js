@@ -1,6 +1,6 @@
 const { userSchemaValidate } = require("../middleware/yupvalidation");
 const blog = require("../model/blog");
-const user = require("../model/user");
+const User = require("../model/user");
 const bcrypt = require("bcrypt");
 
 const getUser = async (req, res) => {
@@ -64,24 +64,32 @@ const deleteBlog = async (req, res) => {
 };
 
 const register = async (req, res) => {
-  console.log(req.body);
   const { firstname, lastname, username, email, password } = req.body;
 
   try {
+    // Check if the email already exists in the database
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(409).json({ error: "Email already exists" });
+    }
+
+    // Email is not already registered, continue with the registration process
     await userSchemaValidate.validate(req.body);
     console.log("validated");
+
     try {
       const salt = await bcrypt.genSalt();
       const hashedPassword = await bcrypt.hash(password, salt);
 
-      const response = await user.create({
+      const response = await User.create({
         firstname,
         lastname,
         username,
         email,
         password: hashedPassword,
       });
-      res.json({ message: "addedd", response });
+      res.json({ message: "Registeration Successful", response });
       console.log("created");
     } catch (err) {
       res.json(err.message);
@@ -90,7 +98,7 @@ const register = async (req, res) => {
     if (error.name === "ValidationError") {
       res.status(404).json({ error: error.message });
     } else {
-      res.send("an error occured");
+      res.send("an error occurred");
     }
   }
 };
