@@ -114,6 +114,7 @@ const register = async (req, res) => {
 };
 
 const getAuth = async (req, res) => {
+  console.log(req.user)
   try {
     const user = await User.findById(req.user).select("-password -_id");
     res.json({ message: user });
