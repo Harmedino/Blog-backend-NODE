@@ -113,6 +113,16 @@ const register = async (req, res) => {
   }
 };
 
+const getAuth = async (req, res) => {
+  try {
+    const user = await User.findById(req.user).select("-password -_id");
+    res.json({ message: user });
+    console.log(req.user);
+  } catch (error) {
+    res.json({ message: error.mesage });
+  }
+};
+
 module.exports = {
   getUser,
   sendPost,
@@ -120,4 +130,5 @@ module.exports = {
   getSingleBlog,
   deleteBlog,
   register,
+  getAuth,
 };
