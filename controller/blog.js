@@ -114,13 +114,38 @@ const register = async (req, res) => {
 };
 
 const getAuth = async (req, res) => {
-  console.log(req.user)
+  console.log(req.user);
   try {
     const user = await User.findById(req.user).select("-password -_id");
     res.json({ message: user });
     console.log(req.user);
   } catch (error) {
     res.json({ message: error.mesage });
+  }
+};
+
+const login = async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ error: "Invalid credentials" });
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_LIFETIME,
+    });
+
+    res.json({ message: "Login successful", token });
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred" });
   }
 };
 
@@ -132,4 +157,5 @@ module.exports = {
   deleteBlog,
   register,
   getAuth,
+  login,
 };

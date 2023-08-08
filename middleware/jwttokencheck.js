@@ -19,7 +19,6 @@ const verifyToken = (req, res, next) => {
 
     // Token is valid, attach user details to the request object
     req.user = decoded.userId;
-    console.log(req.user)
     next();
   });
 };
