@@ -19,8 +19,7 @@ const sendPost = async (req, res) => {
   try {
     const { title, body, author } = req.body;
     const response = await blog.create({ title, body, author });
-    res.json({ message: "addedd", response });
-    console.log("created");
+    res.json({ message: "Blog created succesfully", response });
   } catch (err) {
     res.json(err.message);
   }
@@ -36,7 +35,7 @@ const updateBlog = async (req, res) => {
       { title, body, author },
       { new: true }
     );
-    res.json(result);
+    res.json({ message: "Blog updated successfully", result });
   } catch (err) {
     res.json(err);
   }
