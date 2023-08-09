@@ -29,6 +29,7 @@ const upload = multer({
 
 const sendPost = (req, res) => {
   const { title, body, author, category, date } = req.body;
+  console.log(req.body);
 
   upload(req, res, (err) => {
     if (err) {
