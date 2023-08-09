@@ -1,8 +1,9 @@
 const { userSchemaValidate } = require("../middleware/yupvalidation");
-const blog = require("../model/blog");
+const Blog = require("../model/blog");
 const User = require("../model/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
 
 const getUser = async (req, res) => {
   try {
@@ -13,24 +14,61 @@ const getUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+// storage
 
-const sendPost = async (req, res) => {
+const Storage = multer.diskStorage({
+  destination: "uploads",
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({
+  storage: Storage,
+}).single("image");
+
+const sendPost = (req, res) => {
+  const { title, body, author, category, date } = req.body;
   console.log(req.body);
-  try {
-    const { title, body, author } = req.body;
-    const response = await blog.create({ title, body, author });
-    res.json({ message: "Blog created succesfully", response });
-  } catch (err) {
-    res.json(err.message);
-  }
+
+  upload(req, res, (err) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: "Error uploading image" });
+    }
+
+    const newImage = new Blog({
+      title,
+      body,
+      author,
+      category,
+      date,
+      image: {
+        data: req.file.filename,
+        contentType: "image/png",
+      },
+    });
+
+    newImage
+      .save()
+      .then((response) => {
+        res.json({ message: "Blog created successfully", response });
+      })
+      .catch((err) => {
+        console.log(err);
+        return res.status(500).json({ error: "Internal server error" });
+      });
+  });
 };
+
+module.exports = { sendPost };
 
 const updateBlog = async (req, res) => {
   const { id } = req.params;
   const { title, body, author } = req.body;
 
   try {
-    const result = await blog.findByIdAndUpdate(
+    const result = await Blog.findByIdAndUpdate(
       id,
       { title, body, author },
       { new: true }
@@ -45,7 +83,7 @@ const getSingleBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await blog.findById(id);
+    const result = await Blog.findById(id);
     res.json(result);
   } catch (err) {
     res.json(err);
@@ -56,7 +94,7 @@ const deleteBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await blog.findByIdAndDelete(id);
+    const result = await Blog.findByIdAndDelete(id);
     res.json(result);
   } catch (err) {
     res.json(err);
