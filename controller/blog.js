@@ -29,6 +29,7 @@ const upload = multer({
 
 const sendPost = (req, res) => {
   upload(req, res, (err) => {
+    console.log(req.file);
     if (err) {
       console.log(err);
       return res.status(400).json({ error: "Error uploading image" });
@@ -42,12 +43,8 @@ const sendPost = (req, res) => {
       date: req.body.date,
       image: {
         data: req.file.filename,
-        contentType: "image/png",
       },
     });
-    console.log("Received values from frontend:");
-    console.log("title:", req.body.title);
-    console.log("body:", req.body.body);
     newImage
       .save()
       .then((response) => {
