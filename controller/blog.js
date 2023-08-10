@@ -7,7 +7,7 @@ const multer = require("multer");
 
 const getUser = async (req, res) => {
   try {
-    const response = await blog.find();
+    const response = await Blog.find();
     res.json(response);
   } catch (error) {
     console.error("Error fetching blog data:", error);
@@ -28,27 +28,23 @@ const upload = multer({
 }).single("image");
 
 const sendPost = (req, res) => {
-  const { title, body, author, category, date } = req.body;
-  console.log(req.body);
-
   upload(req, res, (err) => {
+    console.log(req.file);
     if (err) {
       console.log(err);
       return res.status(400).json({ error: "Error uploading image" });
     }
 
     const newImage = new Blog({
-      title,
-      body,
-      author,
-      category,
-      date,
+      title: req.body.title,
+      body: req.body.body,
+      author: req.body.author,
+      category: req.body.category,
+      date: req.body.date,
       image: {
         data: req.file.filename,
-        contentType: "image/png",
       },
     });
-
     newImage
       .save()
       .then((response) => {
@@ -60,8 +56,6 @@ const sendPost = (req, res) => {
       });
   });
 };
-
-module.exports = { sendPost };
 
 const updateBlog = async (req, res) => {
   const { id } = req.params;

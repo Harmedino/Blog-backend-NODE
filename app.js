@@ -5,11 +5,14 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoute = require("./router/blog");
 const auth = require("./router/authentication");
+const path = require("path");
 
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
+// app.use(express.static("public"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 async function connectDB() {
   try {
