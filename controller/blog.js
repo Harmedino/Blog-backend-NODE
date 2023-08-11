@@ -91,8 +91,6 @@ const updateBlog = async (req, res) => {
             return res.status(404).json({ message: "Blog not found" });
           }
 
-          console.log(result);
-
           res.json({ message: "Blog updated successfully", result });
         } catch (err) {
           console.error("Error updating blog:", err);
@@ -106,16 +104,19 @@ const updateBlog = async (req, res) => {
   }
 };
 
-module.exports = { updateBlog };
-
 const getSingleBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await Blog.findById(id);
-    res.json(result);
+    verifyToken(req, res, async () => {
+      const result = await Blog.findById(id);
+      if (!result) {
+        return res.status(404).json({ message: "Blog not found" });
+      }
+      res.json(result);
+    });
   } catch (err) {
-    res.json(err);
+    res.status(500).json({ message: "Error fetching blog" });
   }
 };
 
