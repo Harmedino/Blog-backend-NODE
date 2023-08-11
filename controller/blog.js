@@ -1,3 +1,4 @@
+const verifyToken = require("../middleware/jwttokencheck");
 const { userSchemaValidate } = require("../middleware/yupvalidation");
 const Blog = require("../model/blog");
 const User = require("../model/user");
@@ -28,32 +29,34 @@ const upload = multer({
 }).single("image");
 
 const sendPost = (req, res) => {
-  upload(req, res, (err) => {
-    console.log(req.file);
-    if (err) {
-      console.log(err);
-      return res.status(400).json({ error: "Error uploading image" });
-    }
-
-    const newImage = new Blog({
-      title: req.body.title,
-      body: req.body.body,
-      author: req.body.author,
-      category: req.body.category,
-      date: req.body.date,
-      image: {
-        data: req.file.filename,
-      },
-    });
-    newImage
-      .save()
-      .then((response) => {
-        res.json({ message: "Blog created successfully", response });
-      })
-      .catch((err) => {
+  // Use the verifyToken middleware before uploading
+  verifyToken(req, res, () => {
+    upload(req, res, (err) => {
+      if (err) {
         console.log(err);
-        return res.status(500).json({ error: "Internal server error" });
+        return res.status(400).json({ error: "Error uploading image" });
+      }
+
+      const newImage = new Blog({
+        title: req.body.title,
+        body: req.body.body,
+        author: req.body.author,
+        category: req.body.category,
+        date: req.body.date,
+        image: {
+          data: req.file.filename,
+        },
       });
+      newImage
+        .save()
+        .then((response) => {
+          res.json({ message: "Blog created successfully", response });
+        })
+        .catch((err) => {
+          console.log(err);
+          return res.status(500).json({ error: "Internal server error" });
+        });
+    });
   });
 };
 
@@ -88,8 +91,10 @@ const deleteBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await Blog.findByIdAndDelete(id);
-    res.json(result);
+    verifyToken(req, res, async () => {
+      const result = await Blog.findByIdAndDelete(id);
+      res.json(result);
+    });
   } catch (err) {
     res.json(err);
   }
@@ -103,10 +108,9 @@ const register = async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      return res.status(409).json({ mesage: "Email already exists" });
+      return res.status(409).json({ message: "Email already exists" });
     }
 
-    // Email is not already registered, continue with the registration process
     await userSchemaValidate.validate(req.body);
     console.log("validated");
 
@@ -121,15 +125,9 @@ const register = async (req, res) => {
         email,
         password: hashedPassword,
       });
-      // Generate a JWT token
-      const token = jwt.sign(
-        { userId: response._id, email: response.email },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_LIFETIME }
-      );
 
       // Send the token along with the registration response
-      res.json({ message: "Registration Successful", token });
+      res.json({ message: "Registration Successful" });
 
       console.log("created");
     } catch (err) {
@@ -137,9 +135,9 @@ const register = async (req, res) => {
     }
   } catch (error) {
     if (error.name === "ValidationError") {
-      res.status(404).json({ error: error.message });
+      res.status(404).json({ mesage: error.message });
     } else {
-      res.send("an error occurred");
+      res.json({ message: "an error occurred" });
     }
   }
 };
@@ -173,8 +171,9 @@ const login = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_LIFETIME,
     });
+    res.cookie("token", token);
 
-    res.json({ message: "Login successful", token });
+    res.json({ message: "Login successful", role: user.role, info: user });
   } catch (error) {
     res.status(500).json({ error: "An error occurred" });
   }
