@@ -34,7 +34,7 @@ const sendPost = (req, res) => {
     upload(req, res, (err) => {
       if (err) {
         console.log(err);
-        return res.status(400).json({ error: "Error uploading image" });
+        return res.status(400).json({ message: "Error uploading image" });
       }
 
       const newImage = new Blog({
@@ -54,7 +54,7 @@ const sendPost = (req, res) => {
         })
         .catch((err) => {
           console.log(err);
-          return res.status(500).json({ error: "Internal server error" });
+          return res.status(500).json({ message: "Unable to create Blog" });
         });
     });
   });
@@ -65,12 +65,19 @@ const updateBlog = async (req, res) => {
   const { title, body, author } = req.body;
 
   try {
-    const result = await Blog.findByIdAndUpdate(
-      id,
-      { title, body, author },
-      { new: true }
-    );
-    res.json({ message: "Blog updated successfully", result });
+    // Verify token before updating the blog
+    verifyToken(req, res, async () => {
+      try {
+        const result = await Blog.findByIdAndUpdate(
+          id,
+          { title, body, author },
+          { new: true }
+        );
+        res.json({ message: "Blog updated successfully", result });
+      } catch (err) {
+        res.json({ message: "Error updating blog" });
+      }
+    });
   } catch (err) {
     res.json(err);
   }
