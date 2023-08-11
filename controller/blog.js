@@ -1,3 +1,4 @@
+const { response } = require("express");
 const verifyToken = require("../middleware/jwttokencheck");
 const { userSchemaValidate } = require("../middleware/yupvalidation");
 const Blog = require("../model/blog");
@@ -150,11 +151,9 @@ const register = async (req, res) => {
 };
 
 const getAuth = async (req, res) => {
-  console.log(req.user);
   try {
-    const user = await User.findById(req.user).select("-password -_id");
+    const user = await User.findById(req.user).select("-password ");
     res.json({ message: user });
-    console.log(req.user);
   } catch (error) {
     res.json({ message: error.mesage });
   }
@@ -186,6 +185,41 @@ const login = async (req, res) => {
   }
 };
 
+const updateUser = async (req, res) => {
+  const { id } = req.params;
+  const { firstname, lastname, username, phone, email } = req.body;
+
+  try {
+    verifyToken(req, res, async () => {
+      // Check if the provided email is already in use by another user
+      const existingUserWithEmail = await User.findOne({
+        email,
+        _id: { $ne: id }, // Exclude the current user from the check
+      });
+
+      if (existingUserWithEmail) {
+        return res.status(400).json({ message: "Email already in use" });
+      }
+
+      // Update the user's profile
+      const updatedUser = await User.findByIdAndUpdate(
+        id,
+        { firstname, lastname, username, phone, email },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({ message: "Profile updated successfully" });
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Error updating profile" });
+  }
+};
+
 module.exports = {
   getUser,
   sendPost,
@@ -194,5 +228,6 @@ module.exports = {
   deleteBlog,
   register,
   getAuth,
+  updateUser,
   login,
 };
