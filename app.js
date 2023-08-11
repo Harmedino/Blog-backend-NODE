@@ -10,7 +10,14 @@ const path = require("path");
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    methods: ["GET", "POST", "DELETE", "PATCH"],
+    credentials: true,
+  })
+);
+
 // app.use(express.static("public"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
