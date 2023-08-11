@@ -30,14 +30,13 @@ const upload = multer({
 }).single("image");
 
 const sendPost = (req, res) => {
-  // Use the verifyToken middleware before uploading
   verifyToken(req, res, () => {
     upload(req, res, (err) => {
       if (err) {
         console.log(err);
         return res.status(400).json({ message: "Error uploading image" });
       }
-
+      console.log(req.body);
       const newImage = new Blog({
         title: req.body.title,
         body: req.body.body,
@@ -63,24 +62,45 @@ const sendPost = (req, res) => {
 
 const updateBlog = async (req, res) => {
   const { id } = req.params;
-  const { title, body, author } = req.body;
 
   try {
     // Verify token before updating the blog
     verifyToken(req, res, async () => {
-      try {
-        const result = await Blog.findByIdAndUpdate(
-          id,
-          { title, body, author },
-          { new: true }
-        );
-        res.json({ message: "Blog updated successfully", result });
-      } catch (err) {
-        res.json({ message: "Error updating blog" });
-      }
+      upload(req, res, async (err) => {
+        if (err) {
+          return res.status(400).json({ message: "Error uploading image" });
+        }
+
+        const newImage = {
+          title: req.body.title,
+          body: req.body.body,
+          author: req.body.author,
+          category: req.body.category,
+          date: req.body.date,
+          image: {
+            data: req.file.filename,
+          },
+        };
+
+        try {
+          const result = await Blog.findByIdAndUpdate(id, newImage, {
+            new: true,
+          });
+
+          if (!result) {
+            return res.status(404).json({ message: "Blog not found" });
+          }
+
+          res.json({ message: "Blog updated successfully", result });
+        } catch (err) {
+          console.error("Error updating blog:", err);
+          res.status(500).json({ message: "Error updating blog" });
+        }
+      });
     });
   } catch (err) {
-    res.json(err);
+    console.error("Error verifying token:", err);
+    res.status(500).json({ message: "Error verifying token" });
   }
 };
 
@@ -88,10 +108,15 @@ const getSingleBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await Blog.findById(id);
-    res.json(result);
+    verifyToken(req, res, async () => {
+      const result = await Blog.findById(id);
+      if (!result) {
+        return res.status(404).json({ message: "Blog not found" });
+      }
+      res.json(result);
+    });
   } catch (err) {
-    res.json(err);
+    res.status(500).json({ message: "Error fetching blog" });
   }
 };
 
