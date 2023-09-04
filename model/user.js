@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const blogSchema = require("./blog");
 const { Schema } = mongoose;
 
 const userSchema = new Schema(
@@ -15,10 +14,13 @@ const userSchema = new Schema(
     username: {
       type: String,
       required: true,
+      unique: true,
+      
     },
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,
@@ -31,7 +33,7 @@ const userSchema = new Schema(
       type: String,
       default: "User",
     },
-    blog: [blogSchema],
+   
   },
   { timestamps: true }
 );

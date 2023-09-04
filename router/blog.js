@@ -1,15 +1,17 @@
 const express = require("express");
 const {
-  getUser,
+  getBlog,
   sendPost,
   updateBlog,
   getSingleBlog,
   deleteBlog,
+  getUserBlog
 } = require("../controller/blog");
 
 const router = express.Router();
 
-router.get("/getBlog", getUser);
+router.get("/getBlog", getBlog);
+router.get("/getUserBlog/:id", getUserBlog);
 router.post("/sendPost", sendPost);
 router.patch("/update/:id", updateBlog);
 router.get("/getBlog/:id", getSingleBlog);
