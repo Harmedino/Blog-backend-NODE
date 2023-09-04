@@ -25,6 +25,15 @@ const BlogSchema = new Schema(
       type: String,
       required: true,
     },
+    publication: {
+      type: Boolean,
+      default: false,
+    },
+    publisher: {
+        type: Schema.Types.ObjectId,
+    ref: "User",
+      
+  },
     image: {
       data: String,
       contentType: String,

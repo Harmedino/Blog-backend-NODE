@@ -7,9 +7,21 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const multer = require("multer");
 
-const getUser = async (req, res) => {
+const getBlog = async (req, res) => {
   try {
     const response = await Blog.find();
+    res.json(response);
+  } catch (error) {
+    console.error("Error fetching blog data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getUserBlog = async (req, res) => {
+  const { id } = req.params
+  console.log(id)
+  try {
+    const response = await Blog.find({publisher:id})
     res.json(response);
   } catch (error) {
     console.error("Error fetching blog data:", error);
@@ -29,36 +41,41 @@ const upload = multer({
   storage: Storage,
 }).single("image");
 
-const sendPost = (req, res) => {
+const sendPost = async (req, res) => {
   verifyToken(req, res, () => {
-    upload(req, res, (err) => {
+    upload(req, res, async (err) => {
       if (err) {
         console.log(err);
         return res.status(400).json({ message: "Error uploading image" });
       }
-      console.log(req.body);
-      const newImage = new Blog({
-        title: req.body.title,
-        body: req.body.body,
-        author: req.body.author,
-        category: req.body.category,
-        date: req.body.date,
+
+      const { title, body, category, date, author, authorId } = req.body;
+
+      // Create the new blog with user's ID as the author and publisher
+      const newBlog = new Blog({
+        title,
+        body,
+        author,
+        publisher: authorId, 
+        category,
+        date,
         image: {
           data: req.file.filename,
         },
       });
-      newImage
-        .save()
-        .then((response) => {
-          res.json({ message: "Blog created successfully", response });
-        })
-        .catch((err) => {
-          console.log(err);
-          return res.status(500).json({ message: "Unable to create Blog" });
-        });
+
+      try {
+        const savedBlog = await newBlog.save();
+
+        res.json({ message: "Blog created successfully", blog: savedBlog });
+      } catch (error) {
+        console.error("Error creating blog:", error.message);
+        return res.status(500).json({ message: "Unable to create Blog" });
+      }
     });
   });
 };
+
 
 const updateBlog = async (req, res) => {
   const { id } = req.params;
@@ -106,6 +123,7 @@ const updateBlog = async (req, res) => {
 
 const getSingleBlog = async (req, res) => {
   const { id } = req.params;
+ 
 
   try {
     verifyToken(req, res, async () => {
@@ -142,6 +160,11 @@ const register = async (req, res) => {
 
     if (existingUser) {
       return res.status(409).json({ message: "Email already exists" });
+    }
+    const existingUsername = await User.findOne({ username });
+
+    if (existingUsername) {
+      return res.status(409).json({ message: "userName already exists" });
     }
 
     await userSchemaValidate.validate(req.body);
@@ -246,9 +269,10 @@ const updateUser = async (req, res) => {
 };
 
 module.exports = {
-  getUser,
+  getBlog,
   sendPost,
   updateBlog,
+  getUserBlog,
   getSingleBlog,
   deleteBlog,
   register,
