@@ -27,13 +27,12 @@ const BlogSchema = new Schema(
     },
     publication: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     publisher: {
-        type: Schema.Types.ObjectId,
-    ref: "User",
-      
-  },
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
     image: {
       data: String,
       contentType: String,
