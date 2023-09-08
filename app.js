@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoute = require("./router/blog");
 const auth = require("./router/authentication");
+const mail = require('./router/message')
 const path = require("path");
 
 const app = express();
@@ -12,7 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(
   cors({
-    origin: ["http://localhost:3001"],
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "DELETE", "PATCH"],
     credentials: true,
   })
@@ -39,3 +40,5 @@ connectDB();
 app.use("/", userRoute);
 
 app.use("/", auth);
+
+app.use('/',mail)

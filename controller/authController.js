@@ -106,7 +106,7 @@ const login = async (req, res) => {
       expiresIn: process.env.JWT_LIFETIME,
     });
     res.cookie("token", token);
-
+    console.log(token);
     res.json({ message: "Login successful", role: user.role, info: user });
   } catch (error) {
     res.status(500).json({ error: "An error occurred" });
