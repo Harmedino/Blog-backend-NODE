@@ -29,8 +29,6 @@ const getUserBlog = async (req, res) => {
 };
 // storage
 
-c
-
 const Storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // Ensure that the "uploads" directory exists
