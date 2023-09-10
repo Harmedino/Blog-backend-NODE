@@ -115,6 +115,7 @@ const login = async (req, res) => {
 
 
 
+
 const getAuth = async (req, res) => {
   try {
     const user = await User.findById(req.user).select("-password ");

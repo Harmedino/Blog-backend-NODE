@@ -44,7 +44,7 @@ const sendPost = async (req, res) => {
   verifyToken(req, res, () => {
     upload(req, res, async (err) => {
       if (err) {
-        console.log(err);
+        console.error("Error uploading image:", err); // Log the specific error
         return res.status(400).json({ message: "Error uploading image" });
       }
 
