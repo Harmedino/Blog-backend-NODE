@@ -158,6 +158,36 @@ const deleteBlog = async (req, res) => {
 //   })
 // }
 
+const addComment = async (req, res) => {
+  const { id } = req.params;
+  const { comment, author } = req.body; 
+
+  try {
+    
+    const blog = await Blog.findById(id);
+
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
+
+    
+    const newComment = {
+      comment,
+      author, 
+    };
+
+   
+    blog.comments.push(newComment);
+
+    
+    const updatedBlog = await blog.save();
+
+    res.status(200).json({ message: "Comment added successfully", updatedBlog });
+  } catch (error) {
+    console.error("Error adding comment:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 
 
@@ -167,6 +197,7 @@ module.exports = {
   updateBlog,
   getUserBlog,
   getSingleBlog,
+  addComment,
   deleteBlog,
   
 };

@@ -2,13 +2,30 @@ const mongoose = require("mongoose");
 
 const { Schema } = mongoose;
 
+const CommentSchema = new Schema(
+  {
+    comment: {
+      type: String,
+      required: true,
+    },
+    author: {
+      type: String,
+      required: true,
+    },
+    date: {
+      type: Date,
+      default: Date.now(),
+    },
+  },
+  { timestamps: true }
+);
+
 const BlogSchema = new Schema(
   {
     title: {
       type: String,
       required: true,
     },
-
     body: {
       type: String,
       required: true,
@@ -31,12 +48,13 @@ const BlogSchema = new Schema(
     },
     publisher: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User", 
     },
     image: {
       data: String,
       contentType: String,
     },
+    comments: [CommentSchema],
   },
   { timestamps: true }
 );

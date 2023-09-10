@@ -24,7 +24,10 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 async function connectDB() {
   try {
-    await mongoose.connect(process.env.MONGO_URL);
+    await mongoose.connect(process.env.MONGO_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log("Connected to MongoDB");
     const PORT = 5000;
     app.listen(PORT, () => {

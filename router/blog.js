@@ -5,7 +5,8 @@ const {
   updateBlog,
   getSingleBlog,
   deleteBlog,
-  getUserBlog
+  getUserBlog,
+  addComment
 } = require("../controller/blog");
 
 const router = express.Router();
@@ -16,5 +17,6 @@ router.post("/sendPost", sendPost);
 router.patch("/update/:id", updateBlog);
 router.get("/getBlog/:id", getSingleBlog);
 router.delete("/deleteBlog/:id", deleteBlog);
+router.post("/addComment/:id", addComment)
 
 module.exports = router;
