@@ -31,7 +31,6 @@ async function connectDB() {
     console.log("Connected to MongoDB");
     const PORT = 5000;
     app.listen(PORT, () => {
-      console.log(`App running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Error connecting to MongoDB:", error.message);

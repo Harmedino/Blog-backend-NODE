@@ -105,13 +105,23 @@ const login = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_LIFETIME,
     });
-    res.cookie("token", token);
+
+    const cookieOptions = {
+      // Add your desired options here
+      httpOnly: true, // Example: Make the cookie httpOnly
+      secure: true,   // Example: Set the cookie as secure (requires HTTPS)
+      sameSite: 'strict', // Example: Set the sameSite attribute
+    };
+
+    res.cookie("token", token, cookieOptions);
+
     console.log(token);
     res.json({ message: "Login successful", role: user.role, info: user });
   } catch (error) {
     res.status(500).json({ error: "An error occurred" });
   }
 };
+
 
 const getAuth = async (req, res) => {
   try {
