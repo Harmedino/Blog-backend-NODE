@@ -29,12 +29,24 @@ const getUserBlog = async (req, res) => {
 };
 // storage
 
+c
+
 const Storage = multer.diskStorage({
-  destination: "uploads",
+  destination: (req, file, cb) => {
+    // Ensure that the "uploads" directory exists
+    const uploadDir = './uploads'; // Adjust the path as needed
+    fs.mkdir(uploadDir, { recursive: true }, (err) => {
+      if (err) {
+        return cb(err, null);
+      }
+      cb(null, uploadDir);
+    });
+  },
   filename: (req, file, cb) => {
     cb(null, file.originalname);
   },
 });
+
 
 const upload = multer({
   storage: Storage,
