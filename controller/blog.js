@@ -30,7 +30,7 @@ const getUserBlog = async (req, res) => {
 // storage
 
 const Storage = multer.diskStorage({
-  destination: (req, file, cb) => {
+  destination: (req, file, cb) => {   
     // Ensure that the "uploads" directory exists
     const uploadDir = './uploads'; // Adjust the path as needed
     fs.mkdir(uploadDir, { recursive: true }, (err) => {
