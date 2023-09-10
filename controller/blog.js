@@ -2,6 +2,7 @@
 const verifyToken = require("../middleware/jwttokencheck");
 const nodeMailer = require('nodemailer')
 const Blog = require("../model/blog");
+const fs = require('fs');
 
 
 const multer = require("multer");
