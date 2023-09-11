@@ -51,8 +51,8 @@ const BlogSchema = new Schema(
       ref: "User", 
     },
     image: {
-      data: String,
-      contentType: String,
+      type: String,
+      required:true
     },
     comments: [CommentSchema],
   },
