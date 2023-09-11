@@ -7,10 +7,8 @@ const userRoute = require("./router/blog");
 const auth = require("./router/authentication");
 const mail = require('./router/message');
 const path = require("path");
-const cookieParser = require('cookie-parser');
 
 const app = express();
-app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
