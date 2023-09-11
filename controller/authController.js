@@ -93,13 +93,13 @@ const login = async (req, res) => {
   try {
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ error: "Invalid credentials" });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
@@ -109,7 +109,7 @@ const login = async (req, res) => {
     // Instead of setting the token as a cookie, send it in the response
     res.json({ message: "Login successful", role: user.role, info: user, token });
   } catch (error) {
-    res.status(500).json({ error: "An error occurred" });
+    res.status(500).json({ message: "An error occurred" });
   }
 };
 

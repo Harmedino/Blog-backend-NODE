@@ -20,7 +20,7 @@ const getBlog = async (req, res) => {
     res.json(response);
   } catch (error) {
     console.error("Error fetching blog data:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -32,7 +32,7 @@ const getUserBlog = async (req, res) => {
     res.json(response);
   } catch (error) {
     console.error("Error fetching blog data:", error);
-    res.status(500).json({ error: "Internal server error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 // storage
