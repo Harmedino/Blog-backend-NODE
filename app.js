@@ -15,7 +15,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // CORS Configuration (adjust for production)
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["https://blog-site-beryl.vercel.app"],
     methods: ["GET", "POST", "DELETE", "PATCH"],
     credentials: true,
   })
