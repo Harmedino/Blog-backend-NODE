@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const userRoute = require("./router/blog");
 const auth = require("./router/authentication");
-const mail = require('./router/message');
+const mail = require("./router/message");
 const path = require("path");
 
 const app = express();
@@ -15,11 +15,12 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // CORS Configuration (adjust for production)
 app.use(
   cors({
-    origin: ["https://blog-site-beryl.vercel.app"],
+    origin: "https://blog-site-beryl.vercel.app",
     methods: ["GET", "POST", "DELETE", "PATCH"],
     credentials: true,
   })
 );
+
 
 // Serve uploaded files
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));

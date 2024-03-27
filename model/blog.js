@@ -48,11 +48,11 @@ const BlogSchema = new Schema(
     },
     publisher: {
       type: Schema.Types.ObjectId,
-      ref: "User", 
+      ref: "User",
     },
     image: {
       type: String,
-      required:true
+      required: true,
     },
     comments: [CommentSchema],
   },

@@ -8,6 +8,7 @@ const verifyToken = require("../middleware/jwttokencheck");
 const register = async (req, res) => {
   const { firstname, lastname, username, email, password } = req.body;
 
+
   try {
     // Check if the email already exists in the database
     const existingUser = await User.findOne({ email });
@@ -107,14 +108,16 @@ const login = async (req, res) => {
     });
 
     // Instead of setting the token as a cookie, send it in the response
-    res.json({ message: "Login successful", role: user.role, info: user, token });
+    res.json({
+      message: "Login successful",
+      role: user.role,
+      info: user,
+      token,
+    });
   } catch (error) {
     res.status(500).json({ message: "An error occurred" });
   }
 };
-
-
-
 
 const getAuth = async (req, res) => {
   try {
