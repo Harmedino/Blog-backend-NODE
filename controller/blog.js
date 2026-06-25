@@ -65,19 +65,26 @@ const sendPost = async (req, res) => {
       }
 
       const { title, body, category, date, author, authorId, excerpt, tags } = req.body;
-      const dateTime = new Date(); // Fixed the dateTime initialization
+
+      if (!req.file) {
+        return res.status(400).json({ message: "Cover image is required." });
+      }
+
+      if (!authorId || authorId === "undefined") {
+        return res.status(400).json({ message: "Author not resolved. Please try again." });
+      }
+
+      const dateTime = new Date();
       const storageRef = ref(
         storage,
         `files/${req.file.originalname + dateTime.getTime()}`
-      ); // Used getTime() to get milliseconds
+      );
 
-      // Create file metadata including the content type
       const metadata = {
         contentType: req.file.mimetype,
       };
 
       try {
-        // Upload the file in the bucket storage
         const snapshot = await uploadBytesResumable(
           storageRef,
           req.file.buffer,

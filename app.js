@@ -12,10 +12,21 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// CORS Configuration (adjust for production)
+// CORS Configuration
+const allowedOrigins = [
+  "https://blog-site-beryl.vercel.app",
+  "http://localhost:3000",
+  "http://localhost:5173",
+];
 app.use(
   cors({
-    origin: "https://blog-site-beryl.vercel.app",
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     methods: ["GET", "POST", "DELETE", "PATCH"],
     credentials: true,
   })
