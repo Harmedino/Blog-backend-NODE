@@ -1,6 +1,4 @@
-const messageMail = require("../controller/message").default;
 const express = require("express");
-const mail = require("../services/mail");
 const nodemailer = require("nodemailer");
 
 const router = express.Router();
@@ -11,17 +9,17 @@ router.post('/message', (req, res) => {
   const transporter = nodemailer.createTransport({
     service: 'hotmail',
     auth: {
-      user: 'ahmedifeoluwa4@hotmail.com',
-      pass: 'Harmedino142003',
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
   const mailOptions = {
-    from: 'ahmedifeoluwa4@hotmail.com',
-    to: 'ahmedifeoluwa4@gmail.com',
-    subject: name, 
-    text: message ,
-    replyTo: email, 
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER,
+    subject: name,
+    text: message,
+    replyTo: email,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {

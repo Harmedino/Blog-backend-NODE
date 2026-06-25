@@ -1,7 +1,5 @@
 const verifyToken = require("../middleware/jwttokencheck");
-const nodeMailer = require("nodemailer");
 const Blog = require("../model/blog");
-const fs = require("fs");
 const { app } = require("../config/firebase.config");
 const {
   getStorage,
@@ -117,26 +115,37 @@ const updateBlog = async (req, res) => {
   const { id } = req.params;
 
   try {
-    // Verify token before updating the blog
     verifyToken(req, res, async () => {
       upload(req, res, async (err) => {
         if (err) {
           return res.status(400).json({ message: "Error uploading image" });
         }
 
-        const newImage = {
+        const updateData = {
           title: req.body.title,
           body: req.body.body,
           author: req.body.author,
           category: req.body.category,
           date: req.body.date,
-          image: {
-            data: req.file.filename,
-          },
         };
 
         try {
-          const result = await Blog.findByIdAndUpdate(id, newImage, {
+          if (req.file) {
+            const dateTime = new Date();
+            const storageRef = ref(
+              storage,
+              `files/${req.file.originalname + dateTime.getTime()}`
+            );
+            const metadata = { contentType: req.file.mimetype };
+            const snapshot = await uploadBytesResumable(
+              storageRef,
+              req.file.buffer,
+              metadata
+            );
+            updateData.image = await getDownloadURL(snapshot.ref);
+          }
+
+          const result = await Blog.findByIdAndUpdate(id, updateData, {
             new: true,
           });
 

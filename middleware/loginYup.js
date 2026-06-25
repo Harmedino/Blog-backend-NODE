@@ -5,7 +5,7 @@ const loginSchemaValidate = yup.object().shape({
     .string()
     .email()
     .required()
-    .regex(
+    .matches(
       /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
     ),
   password: yup.string().required(),

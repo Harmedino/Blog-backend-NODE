@@ -1,6 +1,5 @@
 const User = require("../model/user");
 const bcrypt = require("bcrypt");
-const { response } = require("express");
 const { userSchemaValidate } = require("../middleware/yupvalidation");
 const jwt = require("jsonwebtoken");
 const verifyToken = require("../middleware/jwttokencheck");
@@ -46,7 +45,7 @@ const register = async (req, res) => {
     }
   } catch (error) {
     if (error.name === "ValidationError") {
-      res.status(404).json({ mesage: error.message });
+      res.status(404).json({ message: error.message });
     } else {
       res.json({ message: "an error occurred" });
     }
@@ -124,7 +123,7 @@ const getAuth = async (req, res) => {
     const user = await User.findById(req.user).select("-password ");
     res.json({ message: user });
   } catch (error) {
-    res.json({ message: error.mesage });
+    res.json({ message: error.message });
   }
 };
 
