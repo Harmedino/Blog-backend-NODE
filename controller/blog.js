@@ -64,7 +64,7 @@ const sendPost = async (req, res) => {
         return res.status(400).json({ message: "Error uploading image" });
       }
 
-      const { title, body, category, date, author, authorId } = req.body;
+      const { title, body, category, date, author, authorId, excerpt, tags } = req.body;
       const dateTime = new Date(); // Fixed the dateTime initialization
       const storageRef = ref(
         storage,
@@ -98,6 +98,8 @@ const sendPost = async (req, res) => {
           category,
           date,
           image: downloadURL,
+          excerpt: excerpt || "",
+          tags: tags ? tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
         });
 
         const savedBlog = await newBlog.save();
@@ -127,6 +129,8 @@ const updateBlog = async (req, res) => {
           author: req.body.author,
           category: req.body.category,
           date: req.body.date,
+          excerpt: req.body.excerpt || "",
+          tags: req.body.tags ? req.body.tags.split(",").map((t) => t.trim()).filter(Boolean) : [],
         };
 
         try {

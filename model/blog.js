@@ -55,6 +55,14 @@ const BlogSchema = new Schema(
       required: true,
     },
     comments: [CommentSchema],
+    tags: {
+      type: [String],
+      default: [],
+    },
+    excerpt: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );
